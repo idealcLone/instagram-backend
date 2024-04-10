@@ -42,11 +42,19 @@ export class PublicationService {
   ): Promise<Publication[]> {
     const { page, limit } = pagination;
 
-    return await this.publicationRepository.find({
+    const publications = await this.publicationRepository.find({
       where: { user: { id: userId } },
+      order: {
+        createdAt: 'DESC',
+      },
+      relations: {
+        images: true,
+      },
       take: limit,
       skip: (page - 1) * limit,
     });
+
+    return this.mapStorageMultiplePublicationImages(publications);
   }
 
   async getUserFeed(
@@ -60,24 +68,44 @@ export class PublicationService {
 
     followingIds.push(id);
 
-    return await this.publicationRepository.find({
+    const publications = await this.publicationRepository.find({
       where: { user: { id: In(followingIds) } },
       order: {
         createdAt: 'DESC',
       },
       relations: {
         images: true,
+        user: true,
       },
       take: limit,
       skip: (page - 1) * limit,
     });
+
+    return this.mapStorageMultiplePublicationImages(publications);
+  }
+
+  mapStoragePublicationImages(publication: Publication) {
+    return {
+      ...publication,
+      images: publication.images.map((image) => ({
+        ...image,
+        url: this.storageService.mapStorageUrl(image.url),
+      })),
+    };
+  }
+
+  mapStorageMultiplePublicationImages(publications: Publication[]) {
+    return publications.map((publication) =>
+      this.mapStoragePublicationImages(publication),
+    );
   }
 
   async uploadPublication(
     images: Express.Multer.File[],
     dto: UploadPublicationDto,
+    userId: number,
   ): Promise<Publication> {
-    const { description, userId } = dto;
+    const { description } = dto;
     const publication = await this.publicationRepository.save({
       description,
       user: { id: userId },

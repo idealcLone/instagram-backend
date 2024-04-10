@@ -24,9 +24,11 @@ export class AuthService {
 
     const token = await this.generateToken(user.id);
 
-    response.cookie('token', token);
+    const expiresDate = new Date(Date.now() + 1000 * 60 * 60);
 
-    return token;
+    response.cookie('token', token, { expires: expiresDate });
+
+    return { token, user };
   }
 
   async generateToken(userId: number) {

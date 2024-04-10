@@ -15,4 +15,9 @@ export class AuthController {
   ) {
     return this.authService.decodeOAuthToken(body.token, response);
   }
+
+  @Post('logout')
+  logout(@Res({ passthrough: true }) response: Response) {
+    response.clearCookie('token');
+  }
 }

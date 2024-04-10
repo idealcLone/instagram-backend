@@ -25,12 +25,18 @@ export class PublicationController {
   constructor(private readonly publicationService: PublicationService) {}
 
   @Post()
-  @UseInterceptors(FilesInterceptor('images'))
+  @UseGuards(AuthGuard)
+  @UseInterceptors(FilesInterceptor('images[]', 10))
   uploadPublication(
     @UploadedFiles() images: Express.Multer.File[],
     @Body() body: UploadPublicationDto,
+    @Req() request: UserRequest,
   ) {
-    return this.publicationService.uploadPublication(images, body);
+    return this.publicationService.uploadPublication(
+      images,
+      body,
+      request.user.id,
+    );
   }
 
   @Get('/user/:userId')
