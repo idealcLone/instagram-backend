@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { FindOptionsRelations, In, Repository } from 'typeorm';
 import { User } from './entities/User.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -8,6 +8,8 @@ import { Follower } from './entities/Follower.entity';
 import { Like } from './entities/Like.entity';
 import { Comment } from './entities/Comment.entity';
 import { UpdateUserDto } from './dtos/UpdateUser.dto';
+import { UserDetailsDto } from './dtos/UserDetails.dto';
+import { PublicationService } from '../publication/publication.service';
 
 @Injectable()
 export class UserService {
@@ -20,6 +22,8 @@ export class UserService {
     private readonly likeRepository: Repository<Like>,
     @InjectRepository(Comment)
     private readonly commentRepository: Repository<Comment>,
+    @Inject(forwardRef(() => PublicationService))
+    private readonly publicationService: PublicationService,
   ) {}
 
   async getUserByEmail(email: string): Promise<User> {
@@ -97,5 +101,28 @@ export class UserService {
       follower: { id: followerId },
       following: { id: followingId },
     });
+  }
+
+  async getUserFollowersCount(userId: number) {
+    return await this.followerRepository.count({
+      where: { following: { id: userId } },
+    });
+  }
+
+  async getUserFollowingCount(userId: number) {
+    return await this.followerRepository.count({
+      where: { follower: { id: userId } },
+    });
+  }
+
+  async addUserDetails(user: User): Promise<User & UserDetailsDto> {
+    return {
+      ...user,
+      postsCount: await this.publicationService.getUserPublicationCount(
+        user.id,
+      ),
+      followersCount: await this.getUserFollowersCount(user.id),
+      followingCount: await this.getUserFollowingCount(user.id),
+    };
   }
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Publication } from './entities/Publication.entity';
 import { In, Repository } from 'typeorm';
@@ -23,17 +23,20 @@ export class PublicationService {
     @InjectRepository(Comment)
     private readonly commentRepository: Repository<Comment>,
     private readonly storageService: StorageService,
+    @Inject(forwardRef(() => UserService))
     private readonly userService: UserService,
   ) {}
 
   async getPublicationById(publicationId: number): Promise<Publication> {
-    return await this.publicationRepository.findOne({
-      where: { id: publicationId },
-      relations: {
-        user: true,
-        images: true,
-      },
-    });
+    return this.mapStoragePublicationImages(
+      await this.publicationRepository.findOne({
+        where: { id: publicationId },
+        relations: {
+          user: true,
+          images: true,
+        },
+      }),
+    );
   }
 
   async getPublicationsByUser(
@@ -55,6 +58,12 @@ export class PublicationService {
     });
 
     return this.mapStorageMultiplePublicationImages(publications);
+  }
+
+  async getUserPublicationCount(userId: number): Promise<number> {
+    return await this.publicationRepository.count({
+      where: { user: { id: userId } },
+    });
   }
 
   async getUserFeed(

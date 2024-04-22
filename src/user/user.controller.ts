@@ -26,7 +26,7 @@ export class UserController {
   @Get()
   @UseGuards(AuthGuard)
   getCurrentUser(@Req() request: UserRequest) {
-    return request.user;
+    return this.userService.addUserDetails(request.user);
   }
 
   @Patch(':id')
@@ -41,8 +41,10 @@ export class UserController {
   }
 
   @Get(':username')
-  getUserByUsername(@Param('username') username: string) {
-    return this.userService.getUserByUsername(username);
+  async getUserByUsername(@Param('username') username: string) {
+    return this.userService.addUserDetails(
+      await this.userService.getUserByUsername(username),
+    );
   }
 
   @Get('/followers/:id')

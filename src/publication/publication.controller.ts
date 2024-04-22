@@ -39,6 +39,17 @@ export class PublicationController {
     );
   }
 
+  @Get('/feed')
+  @UseGuards(AuthGuard)
+  getUserFeed(@Req() request: UserRequest, @Query() query: PaginationDto) {
+    return this.publicationService.getUserFeed(request.user.id, query);
+  }
+
+  @Get('/:id')
+  getPublicationById(@Param('id', ParseIntPipe) id: number) {
+    return this.publicationService.getPublicationById(id);
+  }
+
   @Get('/user/:userId')
   getPublicationsByUserId(
     @Param('userId', ParseIntPipe) userId: number,
@@ -104,11 +115,5 @@ export class PublicationController {
     @Param('commentId', ParseIntPipe) commentId: number,
   ) {
     return this.publicationService.unlikeComment(request.user.id, commentId);
-  }
-
-  @Get('/feed')
-  @UseGuards(AuthGuard)
-  getUserFeed(@Req() request: UserRequest, @Query() query: PaginationDto) {
-    return this.publicationService.getUserFeed(request.user.id, query);
   }
 }
