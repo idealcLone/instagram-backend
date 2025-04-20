@@ -92,7 +92,6 @@ jobs:
           password: ${{ secrets.DROPLET_PASSWORD }}
           port: 22
           script: |
-            cd /root/instagram-deploy
             docker-compose pull
             docker-compose down
             docker-compose up -d
