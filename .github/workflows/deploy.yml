@@ -15,11 +15,18 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Install Docker Compose
+        run: |
+          sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" \
+            -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+          docker-compose --version
+
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN}}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Create .env file
         run: |
@@ -29,23 +36,18 @@ jobs:
           DB_PORT=${{ secrets.DB_PORT }}
           DB_USERNAME=${{ secrets.DB_USERNAME }}
           DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-
           AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION=${{ secrets.AWS_REGION }}
           AWS_BUCKET_NAME=${{ secrets.AWS_BUCKET_NAME }}
-
           S3_REGION=${{ secrets.S3_REGION }}
           S3_BUCKET_NAME=${{ secrets.S3_BUCKET_NAME }}
           S3_ACCESS_KEY_ID=${{ secrets.S3_ACCESS_KEY_ID }}
           S3_SECRET_ACCESS_KEY=${{ secrets.S3_SECRET_ACCESS_KEY }}
-
           JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
           JWT_EXPIRES_IN=${{ secrets.JWT_EXPIRES_IN }}
-
           OAUTH_CLIENT_ID=${{ secrets.OAUTH_CLIENT_ID }}
           OAUTH_CLIENT_SECRET=${{ secrets.OAUTH_CLIENT_SECRET }}
-
           FRONTEND_URL=${{ secrets.FRONTEND_URL }}
           EOF
 
