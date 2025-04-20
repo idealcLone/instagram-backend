@@ -2,8 +2,11 @@ version: '3.8'
 
 services:
   mysql:
-    image: mysql:8
+    build:
+      context: ./db
+      dockerfile: Dockerfile
     container_name: mysql
+    image: idealclone/mysql:custom
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       MYSQL_DATABASE: ${DB_NAME}
