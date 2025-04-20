@@ -2,8 +2,8 @@ version: '3.8'
 
 services:
   mysql:
-    container_name: mysql
     image: idealclone/mysql:latest
+    container_name: mysql
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       MYSQL_DATABASE: ${DB_NAME}

@@ -92,7 +92,7 @@ jobs:
           password: ${{ secrets.DROPLET_PASSWORD }}
           port: 22
           script: |
-            docker pull ${{ env.IMAGE_NAME }}:latest
-            docker stop instagram-backend || true
-            docker rm instagram-backend || true
-            docker run -d --name instagram-backend -p 8000:8000 --env-file /root/.env ${{ env.IMAGE_NAME }}:latest
+            cd /root/instagram-deploy
+            docker-compose pull
+            docker-compose down
+            docker-compose up -d
