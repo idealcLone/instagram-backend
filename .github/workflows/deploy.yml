@@ -131,4 +131,4 @@ jobs:
 
       - name: Apply manifests
         run: |
-          kubectl apply -f k8s/backend-deployment.yaml
+          kubectl apply -f backend-deployment.yaml
