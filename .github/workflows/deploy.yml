@@ -116,3 +116,10 @@ jobs:
 
             echo "🚀 Starting up containers..."
             docker-compose up -d
+
+      - name: Set up Kubeconfig
+        run: doctl kubernetes cluster kubeconfig save my-cluster
+
+      - name: Apply manifests
+        run: |
+          kubectl apply -f k8s/backend-deployment.yaml
