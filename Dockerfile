@@ -1,6 +1,12 @@
 # Stage 1: Build
 FROM node:20-alpine AS builder
 
+ARG DB_HOST
+ARG DB_NAME
+ARG DB_PORT
+ARG DB_USERNAME
+ARG DB_PASSWORD
+
 WORKDIR /app
 
 # Install dependencies
