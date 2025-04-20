@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 import { UserService } from '../user/user.service';
+import { SES } from 'aws-sdk';
 
 @Injectable()
 export class AuthService {
@@ -25,6 +26,10 @@ export class AuthService {
     const token = await this.generateToken(user.id);
 
     const expiresDate = new Date(Date.now() + 1000 * 60 * 60);
+
+    const ses = new SES();
+
+    // ses.sendEmail({ Destination: payload.email, Message: 'Hello', Source: '' });
 
     response.cookie('token', token, { expires: expiresDate });
 

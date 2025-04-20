@@ -60,6 +60,8 @@ export class UserService {
   }
 
   async getUserByUsername(username: string) {
+    console.log(username);
+
     return await this.userRepository.findOne({ where: { username } });
   }
 

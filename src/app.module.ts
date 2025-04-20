@@ -26,6 +26,8 @@ import { ChatModule } from './chat/chat.module';
       entities: ['dist/**/*.entity.js'],
       migrations: ['src/migrations/**/*.{ts, js}'],
       synchronize: false,
+      retryAttempts: 10,
+      retryDelay: 5000,
     }),
     JwtModule.register({
       global: true,

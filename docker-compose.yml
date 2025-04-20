@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
+    ports:
+      - "3307:3306"
+    networks:
+      - instagram-network
+
+  instagram-backend:
+    image: ${DOCKER_USERNAME}/instagram-backend:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: instagram-backend
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mysql
+    networks:
+      - instagram-network
+
+networks:
+  instagram-network:
+    name: instagram-network
+    driver: bridge
