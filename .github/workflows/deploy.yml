@@ -117,8 +117,17 @@ jobs:
             echo "🚀 Starting up containers..."
             docker-compose up -d
 
+      - name: Install doctl
+        run: |
+          curl -sL https://github.com/digitalocean/doctl/releases/latest/download/doctl-$(uname -s)-$(uname -m) -o doctl
+          chmod +x doctl
+          sudo mv doctl /usr/local/bin
+
+      - name: Authenticate doctl
+        run: doctl auth init --access-token ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
       - name: Set up Kubeconfig
-        run: doctl kubernetes cluster kubeconfig save my-cluster
+        run: doctl kubernetes cluster kubeconfig save e204b213-4401-40bb-8ab4-2fc9f63fdcaf
 
       - name: Apply manifests
         run: |
