@@ -9,6 +9,7 @@ services:
       MYSQL_DATABASE: ${DB_NAME}
     volumes:
       - ./db:/docker-entrypoint-initdb.d
+      - mysql-data:/var/lib/mysql
     ports:
       - "3307:3306"
     networks:
@@ -32,3 +33,6 @@ networks:
   instagram-network:
     name: instagram-network
     driver: bridge
+
+volumes:
+  mysql-data:
