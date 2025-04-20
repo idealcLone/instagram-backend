@@ -15,7 +15,6 @@ services:
       - instagram-network
 
   instagram-backend:
-    image: ${DOCKERHUB_USERNAME}/instagram-backend:latest
     build:
       context: .
       dockerfile: Dockerfile
