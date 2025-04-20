@@ -92,7 +92,7 @@ jobs:
           password: ${{ secrets.DROPLET_PASSWORD }}
           port: 22
           source: "docker-compose.yml"
-          target: "/root/"
+          target: "/root/instagram-deploy"
 
       - name: Deploy to DigitalOcean Droplet via SSH
         uses: appleboy/ssh-action@v1.0.0
@@ -102,7 +102,7 @@ jobs:
           password: ${{ secrets.DROPLET_PASSWORD }}
           port: 22
           script: |
-            cd /root
+            cd /root/instagram-deploy
             docker-compose pull
             docker-compose down
             docker-compose up -d
