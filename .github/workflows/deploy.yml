@@ -84,6 +84,16 @@ jobs:
           source: ".env"
           target: "/root/"
 
+      - name: Upload docker-compose.yml to Droplet
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.DROPLET_HOST }}
+          username: ${{ secrets.DROPLET_USER }}
+          password: ${{ secrets.DROPLET_PASSWORD }}
+          port: 22
+          source: "docker-compose.yml"
+          target: "/root/instagram-deploy/"
+
       - name: Deploy to DigitalOcean Droplet via SSH
         uses: appleboy/ssh-action@v1.0.0
         with:
@@ -92,6 +102,7 @@ jobs:
           password: ${{ secrets.DROPLET_PASSWORD }}
           port: 22
           script: |
+            cd /root/instagram-deploy
             docker-compose pull
             docker-compose down
             docker-compose up -d
