@@ -10,6 +10,7 @@ jobs:
 
     env:
       IMAGE_NAME: idealclone/instagram-backend
+      IMAGE_TAG: ${{ github.sha }}
 
     steps:
       - name: Checkout code
@@ -30,7 +31,9 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ env.IMAGE_NAME }}:latest
+          tags: |
+            ${{ env.IMAGE_NAME }}:latest
+            ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
           build-args: |
             DB_HOST=${{ secrets.DB_HOST }}
             DB_NAME=${{ secrets.DB_NAME }}
@@ -50,29 +53,6 @@ jobs:
             OAUTH_CLIENT_ID=${{ secrets.OAUTH_CLIENT_ID }}
             OAUTH_CLIENT_SECRET=${{ secrets.OAUTH_CLIENT_SECRET }}
             FRONTEND_URL=${{ secrets.FRONTEND_URL }}
-
-      - name: Create .env file
-        run: |
-          cat <<EOF > .env
-          DB_HOST=${{ secrets.DB_HOST }}
-          DB_NAME=${{ secrets.DB_NAME }}
-          DB_PORT=${{ secrets.DB_PORT }}
-          DB_USERNAME=${{ secrets.DB_USERNAME }}
-          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-          AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION=${{ secrets.AWS_REGION }}
-          AWS_BUCKET_NAME=${{ secrets.AWS_BUCKET_NAME }}
-          S3_REGION=${{ secrets.S3_REGION }}
-          S3_BUCKET_NAME=${{ secrets.S3_BUCKET_NAME }}
-          S3_ACCESS_KEY_ID=${{ secrets.S3_ACCESS_KEY_ID }}
-          S3_SECRET_ACCESS_KEY=${{ secrets.S3_SECRET_ACCESS_KEY }}
-          JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
-          JWT_EXPIRES_IN=${{ secrets.JWT_EXPIRES_IN }}
-          OAUTH_CLIENT_ID=${{ secrets.OAUTH_CLIENT_ID }}
-          OAUTH_CLIENT_SECRET=${{ secrets.OAUTH_CLIENT_SECRET }}
-          FRONTEND_URL=${{ secrets.FRONTEND_URL }}
-          EOF
 
       - name: Install doctl
         run: |
@@ -109,7 +89,11 @@ jobs:
             --from-literal=OAUTH_CLIENT_SECRET=${{ secrets.OAUTH_CLIENT_SECRET }} \
             --from-literal=FRONTEND_URL=${{ secrets.FRONTEND_URL }}
 
-
       - name: Apply manifests
         run: |
           kubectl apply -f backend-deployment.yaml
+
+      - name: Update backend deployment image
+        run: |
+          kubectl set image deployment/instagram-backend backend=idealclone/instagram-backend:${{ env.IMAGE_TAG }}
+          kubectl rollout status deployment/instagram-backend
