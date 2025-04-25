@@ -1,29 +1,22 @@
 version: '3.8'
 
 services:
-  mysql:
-    image: idealclone/mysql:latest
-    container_name: mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-      MYSQL_DATABASE: ${DB_NAME}
-    volumes:
-      - ./db:/docker-entrypoint-initdb.d
-      - mysql-data:/var/lib/mysql
-    ports:
-      - "3307:3306"
-    networks:
-      - instagram-network
-
   instagram-backend:
-    image: idealclone/instagram-backend:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        DB_HOST: ${DB_HOST}
+        DB_NAME: ${DB_NAME}
+        DB_PORT: ${DB_PORT}
+        DB_USERNAME: ${DB_USERNAME}
+        DB_PASSWORD: ${DB_PASSWORD}
+    image: idealclone/instagram-backend:${IMAGE_TAG:-dev}
     container_name: instagram-backend
     env_file:
       - .env
     ports:
       - "8000:8000"
-    depends_on:
-      - mysql
     networks:
       - instagram-network
 
@@ -31,6 +24,3 @@ networks:
   instagram-network:
     name: instagram-network
     driver: bridge
-
-volumes:
-  mysql-data:

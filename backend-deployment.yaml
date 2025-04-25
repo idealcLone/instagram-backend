@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: idealclone/instagram-backend:latest
+          image: idealclone/instagram-backend:<GIT_SHA>
           ports:
             - containerPort: 8000
           envFrom:
