@@ -17,10 +17,3 @@ services:
       - .env
     ports:
       - "8000:8000"
-    networks:
-      - instagram-network
-
-networks:
-  instagram-network:
-    name: instagram-network
-    driver: bridge
